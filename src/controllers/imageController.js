@@ -19,7 +19,7 @@ const saveGeneratedImageUrl = async (req, res) => {
     await db.query('INSERT INTO images (uid,jobId, generated_image_url) VALUES (?, ?, ?)', [uid,jobId, imageUrl]);
     res.status(201).send({ message: 'Generated image URL saved successfully' });
     }else{
-      await db.query('UPDATE images SET generated_image_url = ?, updated_at = CURRENT_TIMESTAMP WHERE uid = ?', [imageUrl,uid ]);
+      await db.query('UPDATE images SET generated_image_url = ?, updated_at = CURRENT_TIMESTAMP WHERE uid = ? AND jobId = ?', [imageUrl,uid,jobId ]);
       res.status(201).send({ message: 'Generated image URL updated successfully' });
     }
   } catch (error) {
