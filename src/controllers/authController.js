@@ -1,5 +1,5 @@
 const db = require('../config/db');
-import firebase from 'firebase/app';
+const firebase  = require('../config/firebaseConfig');
 
 const signup = async (req, res) => {
   const { uid, email,userName } = req.body;
