@@ -1,11 +1,10 @@
-const { Pool } = require('pg');
+const mysql = require('mysql2');
 
-const pool = new Pool({
-  user: 'root',
-  host: 'dpg-cpgj4gcf7o1s738fnljg-a',
-  database: 'bangiai',
-  password: '1bb6bLisL85HnFznH61SqPLIu04R5QvK',
-  port: 5432,
+const pool = mysql.createPool({
+  host: 'localhost',
+  user: 'your-mysql-username',
+  password: 'your-mysql-password',
+  database: 'your-database-name'
 });
 
-module.exports = pool;
+module.exports = pool.promise();
