@@ -40,4 +40,14 @@ const getGeneratedImageUrls = async (req, res) => {
   }
 };
 
-module.exports = { saveUploadedImageUrl, saveGeneratedImageUrl, getUploadedImageUrls, getGeneratedImageUrls };
+const getAllImageUrls = async (req, res) => {
+  const { uid } = req.params;
+  try {
+    const [rows] = await db.query('SELECT uploadedImageUrl,generatedImageUrl, created_at, updated_at FROM images WHERE uid = ?', [uid]);
+    res.status(200).send({ images: rows });
+  } catch (error) {
+    res.status(400).send({ message: error.message });
+  }
+};
+
+module.exports = { saveUploadedImageUrl, saveGeneratedImageUrl, getUploadedImageUrls, getGeneratedImageUrls, getAllImageUrls };

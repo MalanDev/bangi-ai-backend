@@ -3,9 +3,15 @@ const db = require('../config/db');
 
 const signup = async (req, res) => {
   const { uid, email,userName } = req.body;
+
   try {
-    await db.query('INSERT INTO users (uid, email,userName) VALUES (?, ?, ?)', [uid, email,userName]);
-    res.status(201).send({ message: 'User created successfully' });
+    const [user] = await db.query('SELECT * FROM users WHERE uid = ?', [uid]);
+    if (user.length === 0) {
+      await db.query('INSERT INTO users (uid, email,userName) VALUES (?, ?, ?)', [uid, email,userName]);
+      res.status(200).send({ message: 'User created successfully' });
+    }else{
+      res.status(401).send({ message: 'User already signup!', error: error.message });
+    }
   } catch (error) {
     res.status(400).send({ message: error.message });
   }
@@ -22,7 +28,7 @@ const login = async (req, res) => {
       if (user.length === 0) {
         try {
             await db.query('INSERT INTO users (uid, email,userName) VALUES (?, ?, ?)', [uid, email, userName]);
-            res.status(201).send({ message: 'User created successfully' });
+            // res.status(201).send({ message: 'User created successfully' });
           } catch (error) {
             res.status(400).send({ message: error.message });
           }
