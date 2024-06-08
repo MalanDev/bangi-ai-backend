@@ -12,14 +12,14 @@ const saveUploadedImageUrl = async (req, res) => {
 };
 
 const saveGeneratedImageUrl = async (req, res) => {
-  const { uid,jobId, imageUrl } = req.body;
+  const { uid,jobId, imageUrl,category, type, mode, style, color, numberOfDesigns, aiInvention, additionalPrompt,pathway, plants } = req.body;
   try {
     const [images] = await db.query('SELECT * FROM images WHERE uid = ? AND jobId = ?', [uid, jobId]);
     if (images.length === 0) {
-    await db.query('INSERT INTO images (uid,jobId, generated_image_url) VALUES (?, ?, ?)', [uid,jobId, imageUrl]);
+    await db.query('INSERT INTO images (uid,jobId, generated_image_url,category, type, mode, style, color, number_of_designs, ai_invention, additional_prompt,pathway, plants) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?)', [uid,jobId, imageUrl,category, type, mode, style, color, numberOfDesigns, aiInvention, additionalPrompt,pathway, plants]);
     res.status(201).send({ message: 'Generated image URL saved successfully' });
     }else{
-      await db.query('UPDATE images SET generated_image_url = ?, updated_at = CURRENT_TIMESTAMP WHERE uid = ? AND jobId = ?', [imageUrl,uid,jobId ]);
+      await db.query('UPDATE images SET generated_image_url = ?, category = ? , type = ? , mode = ? , style = ? , color = ? , number_of_designs = ? , ai_invention = ? , additional_prompt = ?,pathway = ?, plants = ?, updated_at = CURRENT_TIMESTAMP WHERE uid = ? AND jobId = ?', [imageUrl,category, type, mode, style, color, numberOfDesigns, aiInvention, additionalPrompt,pathway, plants, uid,jobId ]);
       res.status(201).send({ message: 'Generated image URL updated successfully' });
     }
   } catch (error) {
@@ -55,13 +55,13 @@ const getGeneratedImageUrls = async (req, res) => {
 const getAllImageUrls = async (req, res) => {
   
   try {
-    const [rows] = await db.query('SELECT uploaded_image_url,generated_image_url,jobId, created_at, updated_at FROM images ORDER BY RAND() LIMIT 9');
+    const [rows] = await db.query('SELECT uploaded_image_url,generated_image_url,jobId, created_at, updated_at, category, type, mode, style, color, number_of_designs, ai_invention, additional_prompt,pathway, plants FROM images ORDER BY RAND() LIMIT 9');
 
     const images = rows.map(row => {
       const urls = row.generated_image_url ? row.generated_image_url.split(',').map(url => url.trim()) : [];
-      const lastUrl = urls.length ? urls[urls.length - 1] : null;
+      const lastUrl = urls.length ? [urls[urls.length - 1]] : [];
       
-      return { ...row, generated_image_url: [lastUrl] };
+      return { ...row, generated_image_url: lastUrl };
     });
 
     res.status(200).send({ images: images });
@@ -73,7 +73,7 @@ const getAllImageUrls = async (req, res) => {
 const getAllImageByUserUrls = async (req, res) => {
   const { uid } = req.params;
   try {
-    const [rows] = await db.query('SELECT uploaded_image_url,generated_image_url,jobId, created_at, updated_at FROM images WHERE uid = ?', [uid]);
+    const [rows] = await db.query('SELECT uploaded_image_url,generated_image_url,jobId, created_at, updated_at, category, type, mode, style, color, number_of_designs, ai_invention, additional_prompt,pathway, plants FROM images WHERE uid = ?', [uid]);
 
     const images = rows.map(row => {
       const urls = row.generated_image_url ? row.generated_image_url.split(',').map(url => url.trim()) : [];
@@ -89,7 +89,7 @@ const getAllImageByUserUrls = async (req, res) => {
 const getImagesUrlsByJobUser = async (req, res) => {
   const { uid, jobId } = req.query;
   try {
-    const [rows] = await db.query('SELECT uploaded_image_url,generated_image_url,jobId, created_at, updated_at FROM images WHERE uid = ? AND jobId = ?', [uid, jobId]);
+    const [rows] = await db.query('SELECT uploaded_image_url,generated_image_url,jobId, created_at, updated_at, category, type, mode, style, color, number_of_designs, ai_invention, additional_prompt,pathway, plants FROM images WHERE uid = ? AND jobId = ?', [uid, jobId]);
     const images = rows.map(row => {
       const urls = row.generated_image_url ? row.generated_image_url.split(',').map(url => url.trim()) : [];
       return { ...row, generated_image_url: urls };
