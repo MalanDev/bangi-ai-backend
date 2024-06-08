@@ -53,6 +53,22 @@ const getGeneratedImageUrls = async (req, res) => {
 };
 
 const getAllImageUrls = async (req, res) => {
+  
+  try {
+    const [rows] = await db.query('SELECT uploaded_image_url,generated_image_url,jobId, created_at, updated_at FROM images ORDER BY RAND() LIMIT 9');
+
+    const images = rows.map(row => {
+      const urls = row.generated_image_url ? row.generated_image_url.split(',').map(url => url.trim()) : [];
+      return { ...row, generated_image_url: urls };
+    });
+
+    res.status(200).send({ images: images });
+  } catch (error) {
+    res.status(400).send({ message: error.message });
+  }
+};
+
+const getAllImageByUserUrls = async (req, res) => {
   const { uid } = req.params;
   try {
     const [rows] = await db.query('SELECT uploaded_image_url,generated_image_url,jobId, created_at, updated_at FROM images WHERE uid = ?', [uid]);
@@ -82,4 +98,4 @@ const getImagesUrlsByJobUser = async (req, res) => {
   }
 };
 
-module.exports = { saveUploadedImageUrl, saveGeneratedImageUrl, getUploadedImageUrls, getGeneratedImageUrls, getAllImageUrls, getImagesUrlsByJobUser };
+module.exports = { saveUploadedImageUrl, saveGeneratedImageUrl, getUploadedImageUrls, getGeneratedImageUrls, getAllImageUrls,getAllImageByUserUrls, getImagesUrlsByJobUser };
