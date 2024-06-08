@@ -59,7 +59,9 @@ const getAllImageUrls = async (req, res) => {
 
     const images = rows.map(row => {
       const urls = row.generated_image_url ? row.generated_image_url.split(',').map(url => url.trim()) : [];
-      return { ...row, generated_image_url: urls };
+      const lastUrl = urls.length ? urls[urls.length - 1] : null;
+      
+      return { ...row, generated_image_url: [lastUrl] };
     });
 
     res.status(200).send({ images: images });
