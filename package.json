@@ -1,19 +1,25 @@
 {
-  "name": "bangi-ai-backend",
+  "name": "banigiai-backend",
   "version": "1.0.0",
-  "description": "",
+  "description": "banigi ai backend",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MalanDev/bangi-ai-backend.git"
+  },
   "author": "",
   "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/MalanDev/bangi-ai-backend/issues"
+  },
+  "homepage": "https://github.com/MalanDev/bangi-ai-backend#readme",
   "dependencies": {
     "body-parser": "^1.20.2",
     "cors": "^2.8.5",
     "express": "^4.19.2",
-    "firebase": "^10.12.2",
-    "mysql2": "^3.10.0"
+    "mysql2": "^1.7.0"
   }
 }
