@@ -7,21 +7,33 @@ const signup = async (req, res) => {
 
   try {
     
-    const [user] = await db.query('SELECT * FROM users WHERE uid = ? AND email = ?', [uid, email]);
-    
-    if (user.length === 0) {
-     
-      const customer = await stripe.customers.create({
-        email:email,
+    const [user] = await db.query('SELECT * FROM users WHERE uid = ?', [uid]);
+
+    const customers = await stripe.customers.list({
+      email: email,
+      limit: 1,
+    });
+
+    let customer;
+    if (customers.data.length > 0) {
+      // Customer exists
+      customer = customers.data[0];
+    } else {
+      // Customer does not exist, create a new one
+      customer = await stripe.customers.create({
+        email: email,
         name: userName,
       });
-      console.log(customer);
-      const customerId = customer.id;
+    }
+    
+    const customerId = customer.id;
+    if (user.length === 0) {
      
       await db.query('INSERT INTO users (uid, email,userName,stripeCustomerId) VALUES (?, ?, ?,?)', [uid, email,userName,customerId]);
       res.status(200).send({ message: 'User created successfully',stripeCustomerId: customer.id});
     }else{
-      res.status(401).send({ message: 'User already signup!' });
+      await db.query('UPDATE users SET email=?,userName=?,stripeCustomerId=? WHERE uid = ?', [email,userName,customerId,uid]);
+      res.status(200).send({ message: 'User created successfully',stripeCustomerId: customer.id});
     }
   } catch (error) {
     console.log(error);
