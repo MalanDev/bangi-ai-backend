@@ -70,7 +70,7 @@ const getGeneratedImageUrls = async (req, res) => {
 const getAllImageUrls = async (req, res) => {
   
   try {
-    const [rows] = await db.query('SELECT uploaded_image_url,generated_image_url,jobId, created_at, updated_at, category, type, mode, style, color, number_of_designs, ai_invention, additional_prompt,pathway, plants FROM images ORDER BY created_at DESC LIMIT 9');
+    const [rows] = await db.query('SELECT uploaded_image_url,generated_image_url,jobId, created_at, updated_at, category, type, mode, style, color, number_of_designs, ai_invention, additional_prompt,pathway, plants FROM images ORDER BY created_at DESC');
 
     const images = rows
     .filter(row => row.generated_image_url && row.uploaded_image_url)
@@ -79,7 +79,8 @@ const getAllImageUrls = async (req, res) => {
       const lastUrl = urls.length ? [urls[urls.length - 1]] : [];
       
       return { ...row, generated_image_url: lastUrl };
-    }).filter(image => image.generated_image_url.length > 0);
+    }).filter(image => image.generated_image_url.length > 0)
+    .slice(0, 9);
 
     res.status(200).send({ images: images });
   } catch (error) {
