@@ -92,7 +92,7 @@ const login = async (req, res) => {
              subscription= null;
          }
       }
-        res.status(200).send({user:{uid, email: user[0].email,userName:user[0].userName,stripeCustomerId: user[0].stripeCustomerId,subscription_date:user[0].subscription_date,package_name:user[0].package_name,available_token:user[0].userName,package_total:user[0].userName,payment_status:user[0].payment_status,client_reference_id:user[0].client_reference_id,isExpired:isExpired,subscription:subscription} });
+        res.status(200).send({user:{uid, email: user[0].email,userName:user[0].userName,stripeCustomerId: user[0].stripeCustomerId,subscription_date:user[0].subscription_date,package_name:user[0].package_name,available_token:user[0].available_token,package_total:user[0].package_total,payment_status:user[0].payment_status,client_reference_id:user[0].client_reference_id,isExpired:isExpired,subscription:subscription} });
       }
 
      
@@ -148,6 +148,28 @@ reduceTokenByUser= async (req, res) => {
   }
 };
 
+const getAvailableTokenByUser= async (req, res) => {
+  const { uid } = req.query;
+  try {
+    
+
+    const [user] = await db.query('SELECT * FROM users WHERE uid = ?', [uid]);
+    if (user.length === 0) {
+     
+      res.status(401).send({ message: "User not found!" });
+     
+    }else{
+      var tokenValue = user[0].available_token;
+
+      res.status(200).send({ available_token:tokenValue });
+    }
+
+   
+  } catch (error) {
+    res.status(401).send({ message: 'Unauthorized', error: error.message });
+  }
+};
+
 const createStripeId = async (req, res) => {
   const { uid} = req.query;
 
@@ -176,4 +198,4 @@ const createStripeId = async (req, res) => {
 };
 
 
-module.exports = { signup, login, updateUser,getUserById,reduceTokenByUser,createStripeId };
+module.exports = { signup, login, updateUser,getUserById,reduceTokenByUser,createStripeId ,getAvailableTokenByUser};
