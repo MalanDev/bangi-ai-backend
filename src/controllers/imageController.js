@@ -45,7 +45,7 @@ const getGeneratedImageUrls = async (req, res) => {
     const images = rows.map(row => {
       const urls = row.generated_image_url ? row.generated_image_url.split(',').map(url => url.trim()) : [];
       return { ...row, generated_image_url: urls };
-    });
+    }).filter(image => image.generated_image_url.length > 0);
     res.status(200).send({ images: images });
   } catch (error) {
     res.status(400).send({ message: error.message });

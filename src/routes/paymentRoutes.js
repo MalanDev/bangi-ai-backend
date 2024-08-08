@@ -3,8 +3,8 @@ const {createCheckoutSessionUrl ,checkoutSessionUrl, checkSubscriptionStatus} = 
 const router = express.Router();
 
 router.post('/create-checkout-session', createCheckoutSessionUrl);
-router.post('/checkout-session', checkoutSessionUrl);
-router.post('/check-subscription-status', checkSubscriptionStatus);
+router.get('/checkout-session', checkoutSessionUrl);
+router.get('/check-subscription-status', checkSubscriptionStatus);
 
 
 module.exports = router;

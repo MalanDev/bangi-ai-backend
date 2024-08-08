@@ -6,19 +6,25 @@ const signup = async (req, res) => {
   const { uid, email,userName } = req.body;
 
   try {
+    
     const [user] = await db.query('SELECT * FROM users WHERE uid = ? AND email = ?', [uid, email]);
     
     if (user.length === 0) {
+     
       const customer = await stripe.customers.create({
-        email,
-        userName,
+        email:email,
+        name: userName,
       });
-      await db.query('INSERT INTO users (uid, email,userName,stripeCustomerId) VALUES (?, ?, ?,?)', [uid, email,userName,customer.id]);
+      console.log(customer);
+      const customerId = customer.id;
+     
+      await db.query('INSERT INTO users (uid, email,userName,stripeCustomerId) VALUES (?, ?, ?,?)', [uid, email,userName,customerId]);
       res.status(200).send({ message: 'User created successfully',stripeCustomerId: customer.id});
     }else{
       res.status(401).send({ message: 'User already signup!' });
     }
   } catch (error) {
+    console.log(error);
     res.status(401).send({ message: error.message });
   }
 };
@@ -36,7 +42,7 @@ const login = async (req, res) => {
       }else{
         await db.query('UPDATE users SET last_login = CURRENT_TIMESTAMP WHERE uid = ?', [uid]);
   
-        res.status(200).send({ message: 'Login successful', uid, email: user[0].email,userName:user[0].userName });
+        res.status(200).send({ message: 'Login successful', user:{uid, email: user[0].email,userName:user[0].userName,stripeCustomerId: user[0].stripeCustomerId,subscription_date:user[0].subscription_date,package_name:user[0].package_name,available_token:user[0].userName,package_total:user[0].userName,payment_status:user[0].payment_status,client_reference_id:user[0].client_reference_id} });
       }
 
      
@@ -57,7 +63,7 @@ const login = async (req, res) => {
        
       }else{
         
-        res.status(200).send({ message: 'Login successful', uid, email: user[0].email,userName:user[0].userName });
+        res.status(200).send({user:{uid, email: user[0].email,userName:user[0].userName,stripeCustomerId: user[0].stripeCustomerId,subscription_date:user[0].subscription_date,package_name:user[0].package_name,available_token:user[0].userName,package_total:user[0].userName,payment_status:user[0].payment_status,client_reference_id:user[0].client_reference_id} });
       }
 
      
@@ -79,7 +85,7 @@ const updateUser = async (req, res) => {
     }else{
       await db.query('UPDATE users SET stripeCustomerId= ?,subscription_date=?,package_name=?,available_token=?,package_total=?,payment_status=?,client_reference_id=?,updated_at=CURRENT_TIMESTAMP WHERE uid = ?', [stripeCustomerId,subscription_date,package_name,available_token,package_total,payment_status,client_reference_id,uid]);
 
-      res.status(200).send({ message: 'Login successful', uid, email: user[0].email,userName:user[0].userName });
+      res.status(200).send({ message: 'Update successful'});
     }
 
    
@@ -93,7 +99,7 @@ reduceTokenByUser= async (req, res) => {
   try {
     
 
-    const [user] = await db.query('SELECT * FROM users WHERE uid = ?', [uid,email]);
+    const [user] = await db.query('SELECT * FROM users WHERE uid = ?', [uid]);
     if (user.length === 0) {
      
       res.status(401).send({ message: "User not found!" });
@@ -114,4 +120,4 @@ reduceTokenByUser= async (req, res) => {
 };
 
 
-module.exports = { signup, login, updateUser,getUserById };
+module.exports = { signup, login, updateUser,getUserById,reduceTokenByUser };

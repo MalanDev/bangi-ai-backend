@@ -36,12 +36,12 @@ const createCheckoutSessionUrl = async (req, res) => {
     }
   };
 
-  checkSubscriptionStatus = async (req, res) => {
-    const { customerId } = req.body;
+  const checkSubscriptionStatus = async (req, res) => {
+    const { stripeCustomerId } = req.query;
   
     try {
       const subscriptions = await stripe.subscriptions.list({
-        customer: customerId,
+        customer: stripeCustomerId,
         status: 'all',
         limit: 1,
       });
