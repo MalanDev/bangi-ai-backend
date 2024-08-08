@@ -1,4 +1,5 @@
 const db = require('../config/db');
+const skkey = require('../config/stripe')
 const stripe = require('stripe')(skkey.SECRET_KEY);
 
 const signup = async (req, res) => {
