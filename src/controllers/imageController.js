@@ -14,14 +14,29 @@ const saveUploadedImageUrl = async (req, res) => {
 const saveGeneratedImageUrl = async (req, res) => {
   const { uid,jobId, imageUrl,category, type, mode, style, color, numberOfDesigns, aiInvention, additionalPrompt,pathway, plants } = req.body;
   try {
-    const [images] = await db.query('SELECT * FROM images WHERE uid = ? AND jobId = ?', [uid, jobId]);
-    if (images.length === 0) {
-    await db.query('INSERT INTO images (uid,jobId, generated_image_url,category, type, mode, style, color, number_of_designs, ai_invention, additional_prompt,pathway, plants) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?)', [uid,jobId, imageUrl,category, type, mode, style, color, numberOfDesigns, aiInvention, additionalPrompt,pathway, plants]);
-    res.status(201).send({ message: 'Generated image URL saved successfully' });
+
+    const [user] = await db.query('SELECT * FROM users WHERE uid = ?', [uid]);
+    if (user.length === 0) {
+     
+      res.status(401).send({ message: "User not found!" });
+     
     }else{
-      await db.query('UPDATE images SET generated_image_url = ?, category = ? , type = ? , mode = ? , style = ? , color = ? , number_of_designs = ? , ai_invention = ? , additional_prompt = ?,pathway = ?, plants = ?, updated_at = CURRENT_TIMESTAMP WHERE uid = ? AND jobId = ?', [imageUrl,category, type, mode, style, color, numberOfDesigns, aiInvention, additionalPrompt,pathway, plants, uid,jobId ]);
-      res.status(201).send({ message: 'Generated image URL updated successfully' });
+      var tokenValue = user[0].available_token - numberOfDesigns
+      if(tokenValue>=0){
+      await db.query('UPDATE users SET available_token = ? WHERE uid = ?', [tokenValue,uid]);
+      }
+
+      const [images] = await db.query('SELECT * FROM images WHERE uid = ? AND jobId = ?', [uid, jobId]);
+      if (images.length === 0) {
+      await db.query('INSERT INTO images (uid,jobId, generated_image_url,category, type, mode, style, color, number_of_designs, ai_invention, additional_prompt,pathway, plants) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?)', [uid,jobId, imageUrl,category, type, mode, style, color, numberOfDesigns, aiInvention, additionalPrompt,pathway, plants]);
+      res.status(201).send({ message: 'Generated image URL saved successfully' });
+      }else{
+        await db.query('UPDATE images SET generated_image_url = ?, category = ? , type = ? , mode = ? , style = ? , color = ? , number_of_designs = ? , ai_invention = ? , additional_prompt = ?,pathway = ?, plants = ?, updated_at = CURRENT_TIMESTAMP WHERE uid = ? AND jobId = ?', [imageUrl,category, type, mode, style, color, numberOfDesigns, aiInvention, additionalPrompt,pathway, plants, uid,jobId ]);
+        res.status(201).send({ message: 'Generated image URL updated successfully' });
+      }
+
     }
+   
   } catch (error) {
     res.status(400).send({ message: error.message });
   }
