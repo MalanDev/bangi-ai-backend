@@ -13,7 +13,7 @@ const createCheckoutSessionUrl = async (req, res) => {
           }],
           customer: stripeCustomerId,
           mode: 'subscription',
-          success_url: 'https://bangi-ai-frontend.vercel.app/success{CHECKOUT_SESSION_ID}',
+          success_url: 'https://bangi-ai-frontend.vercel.app/success/{CHECKOUT_SESSION_ID}',
           cancel_url: 'https://bangi-ai-frontend.vercel.app/cancel',
         });
     

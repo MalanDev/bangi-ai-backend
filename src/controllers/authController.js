@@ -74,8 +74,26 @@ const login = async (req, res) => {
         res.status(401).send({ message: "User not found!" });
        
       }else{
+        let isExpired;
+        let subscription;
+        const subscriptions = await stripe.subscriptions.list({
+          customer: user[0].stripeCustomerId,
+          status: 'all',
+          limit: 1,
+        });
+    
+        if (subscriptions.data.length > 0) {
+           subscription = subscriptions.data[0];
+           isExpired = subscription.status !== 'active';
+    
+         
+        } else {
         
-        res.status(200).send({user:{uid, email: user[0].email,userName:user[0].userName,stripeCustomerId: user[0].stripeCustomerId,subscription_date:user[0].subscription_date,package_name:user[0].package_name,available_token:user[0].userName,package_total:user[0].userName,payment_status:user[0].payment_status,client_reference_id:user[0].client_reference_id} });
+            isExpired= true;
+            subscription= null;
+        
+        }
+        res.status(200).send({user:{uid, email: user[0].email,userName:user[0].userName,stripeCustomerId: user[0].stripeCustomerId,subscription_date:user[0].subscription_date,package_name:user[0].package_name,available_token:user[0].userName,package_total:user[0].userName,payment_status:user[0].payment_status,client_reference_id:user[0].client_reference_id,isExpired:isExpired,subscription:subscription} });
       }
 
      
