@@ -119,5 +119,32 @@ reduceTokenByUser= async (req, res) => {
   }
 };
 
+const createStripeId = async (req, res) => {
+  const { uid} = req.query;
 
-module.exports = { signup, login, updateUser,getUserById,reduceTokenByUser };
+  try {
+    
+    const [user] = await db.query('SELECT * FROM users WHERE uid = ? AND email = ?', [uid, email]);
+    
+    if (user.length === 0) {
+     
+      const customer = await stripe.customers.create({
+        email:user[0].email,
+        name: user[0].userName,
+      });
+      console.log(customer);
+      const customerId = customer.id;
+     
+      await db.query('UPDATE users SET stripeCustomerId = ? WHERE uid = ?', [uid,customerId]);
+      res.status(200).send({ message: 'stripeCustomerId created successfully',stripeCustomerId: customer.id});
+    }else{
+      res.status(401).send({ message: 'User already signup!' });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(401).send({ message: error.message });
+  }
+};
+
+
+module.exports = { signup, login, updateUser,getUserById,reduceTokenByUser,createStripeId };
