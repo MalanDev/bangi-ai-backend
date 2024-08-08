@@ -76,24 +76,21 @@ const login = async (req, res) => {
       }else{
         let isExpired = false;
         let subscription = null;
-        if(user[0].stripeCustomerId != null){
-        const subscriptions = await stripe.subscriptions.list({
-          customer: user[0].stripeCustomerId,
-          status: 'all',
-          limit: 1,
-        });
+
+        if(user[0].stripeCustomerId != null && user[0].stripeCustomerId != ""){
+          const subscriptions = await stripe.subscriptions.list({
+              customer: 'cus_QcdJdjVmAWqR8p',
+              status: 'all',
+              limit: 1,
+          });
     
-        if (subscriptions.data.length > 0) {
-           subscription = subscriptions.data[0];
-           isExpired = subscription.status !== 'active';
-    
-         
-        } else {
-        
-            isExpired= true;
-            subscription= null;
-        
-        }
+          if (subscriptions.data.length > 0) {
+             subscription = subscriptions.data[0];
+             isExpired = subscription.status !== 'active';
+          } else {
+             isExpired= true;
+             subscription= null;
+         }
       }
         res.status(200).send({user:{uid, email: user[0].email,userName:user[0].userName,stripeCustomerId: user[0].stripeCustomerId,subscription_date:user[0].subscription_date,package_name:user[0].package_name,available_token:user[0].userName,package_total:user[0].userName,payment_status:user[0].payment_status,client_reference_id:user[0].client_reference_id,isExpired:isExpired,subscription:subscription} });
       }
