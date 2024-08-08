@@ -76,10 +76,10 @@ const login = async (req, res) => {
       }else{
         let isExpired = false;
         let subscription = null;
-
+        
         if(user[0].stripeCustomerId != null && user[0].stripeCustomerId != ""){
           const subscriptions = await stripe.subscriptions.list({
-              customer: 'cus_QcdJdjVmAWqR8p',
+              customer: user[0].stripeCustomerId.toString(),
               status: 'all',
               limit: 1,
           });
