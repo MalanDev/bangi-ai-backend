@@ -55,7 +55,7 @@ const getGeneratedImageUrls = async (req, res) => {
 const getAllImageUrls = async (req, res) => {
   
   try {
-    const [rows] = await db.query('SELECT uploaded_image_url,generated_image_url,jobId, created_at, updated_at, category, type, mode, style, color, number_of_designs, ai_invention, additional_prompt,pathway, plants FROM images ORDER BY RAND() LIMIT 9');
+    const [rows] = await db.query('SELECT uploaded_image_url,generated_image_url,jobId, created_at, updated_at, category, type, mode, style, color, number_of_designs, ai_invention, additional_prompt,pathway, plants FROM images LIMIT 9');
 
     const images = rows.map(row => {
       const urls = row.generated_image_url ? row.generated_image_url.split(',').map(url => url.trim()) : [];
