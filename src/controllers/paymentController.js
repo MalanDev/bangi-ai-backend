@@ -14,8 +14,8 @@ const createCheckoutSessionUrl = async (req, res) => {
           customer: stripeCustomerId,
           allow_promotion_codes: true,
           mode: 'subscription',
-          success_url: 'http://localhost:5173/success/{CHECKOUT_SESSION_ID}',
-          cancel_url: 'http://localhost:5173/cancel',
+          success_url: 'https://ai.banigi.com/success/{CHECKOUT_SESSION_ID}',
+          cancel_url: 'https://ai.banigi.com/cancel',
         });
     
         res.send({
