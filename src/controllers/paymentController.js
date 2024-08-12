@@ -12,6 +12,7 @@ const createCheckoutSessionUrl = async (req, res) => {
             quantity: 1,
           }],
           customer: stripeCustomerId,
+          allow_promotion_codes: true,
           mode: 'subscription',
           success_url: 'http://localhost:5173/success/{CHECKOUT_SESSION_ID}',
           cancel_url: 'http://localhost:5173/cancel',
